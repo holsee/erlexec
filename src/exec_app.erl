@@ -56,10 +56,12 @@ stop(_S) ->
 
 %% @private
 init([]) ->
-    Options = 
+    Options =
         lists:foldl(
             fun(I, Acc) -> add_option(I, Acc) end,
             [], [I || {I, _} <- exec:default()]),
+    io:format("Opt: ~p~n", [Options]),
+    io:format("App: ~p~n", [application:get_all_env(erlexec)]),
     {ok, {
         {one_for_one, 3, 30},               % Allow MaxR restarts within MaxT seconds
         [{  exec,                           % Id       = internal id
@@ -70,7 +72,7 @@ init([]) ->
             [exec]                          % Modules  = [Module] | dynamic
         }]
     }}.
- 
+
 add_option(Option, Acc) ->
     case application:get_env(erlexec, Option) of
     {ok, Value} -> [{Option, Value} | Acc];
